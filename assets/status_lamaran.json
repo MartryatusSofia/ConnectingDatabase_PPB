@@ -1,0 +1,26 @@
+[
+  {
+    "nama": "Admin Toko Online",
+    "perusahaan": "GlobalTrans Indo",
+    "status": "Terkirim",
+    "logo": "assets/logo1.png"
+  },
+  {
+    "nama": "Desain Grafis",
+    "perusahaan": "CV. Kreasi Warna",
+    "status": "Diproses",
+    "logo": "assets/logo2.png"
+  },
+  {
+    "nama": "Data Entry Operator",
+    "perusahaan": "PT. Digital Nusantara",
+    "status": "Terkirim",
+    "logo": "assets/logo3.png"
+  },
+  {
+    "nama": "Admin Sosial Media",
+    "perusahaan": "GlobalTrans Indo",
+    "status": "Ditolak",
+    "logo": "assets/logo4.png"
+  }
+]
