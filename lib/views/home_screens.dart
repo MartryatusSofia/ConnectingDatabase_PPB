@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ppb_koneksibilitas/controllers/lowongan_controller.dart';
 import 'package:ppb_koneksibilitas/models/lowongan_model.dart';
@@ -8,8 +9,6 @@ import 'package:ppb_koneksibilitas/widgets/job_card.dart';
 import 'package:ppb_koneksibilitas/widgets/training_card.dart';
 
 import 'package:ppb_koneksibilitas/screens/search_screens.dart';
-
-
 
 class HomeScreens extends StatefulWidget {
   const HomeScreens({super.key});
@@ -21,14 +20,26 @@ class HomeScreens extends StatefulWidget {
 class _HomeScreensState extends State<HomeScreens> {
   final LowonganController _lowonganController = LowonganController();
 
-  int _selectedFilterIndex = 0;
+  /// USERNAME DARI INPUT LOGIN
+  String _userName = '';
 
-  final List<String> _filters = [
-    'Semua',
-    'Full-time',
-    'Entry level',
-    'Remote',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  /// AMBIL USERNAME DARI SHARED PREFERENCES
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('user_name');
+
+    debugPrint('USERNAME LOGIN: $username');
+
+    setState(() {
+      _userName = username ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +58,9 @@ class _HomeScreensState extends State<HomeScreens> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Halo! Ruby Selamat Datang 👋🏻',
-                    style: TextStyle(
+                  Text(
+                    'Halo! $_userName Selamat Datang 👋🏻',
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: textDark,
@@ -104,38 +115,6 @@ class _HomeScreensState extends State<HomeScreens> {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // FILTER
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(_filters.length, (index) {
-                        final isSelected = _selectedFilterIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: ChoiceChip(
-                            label: Text(_filters[index]),
-                            selected: isSelected,
-                            onSelected: (_) {
-                              setState(() {
-                                _selectedFilterIndex = index;
-                              });
-                            },
-                            selectedColor: textDark,
-                            backgroundColor: const Color(0xFFF3F4F6),
-                            labelStyle: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : const Color(0xFF374151),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -157,7 +136,7 @@ class _HomeScreensState extends State<HomeScreens> {
                     ),
                     const SizedBox(height: 12),
 
-                    /// ========= LOWONGAN DARI DATABASE =========
+                    /// ========= LOWONGAN =========
                     FutureBuilder<List<Lowongan>>(
                       future: _lowonganController.getLowongan(),
                       builder: (context, snapshot) {
@@ -165,7 +144,9 @@ class _HomeScreensState extends State<HomeScreens> {
                             ConnectionState.waiting) {
                           return const Padding(
                             padding: EdgeInsets.symmetric(vertical: 24),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
                           );
                         }
 
@@ -177,7 +158,7 @@ class _HomeScreensState extends State<HomeScreens> {
 
                         if (lowongan.isEmpty) {
                           return const Text(
-                            'Belum ada lowongan yang tersedia saat ini',
+                            'Belum ada lowongan yang tersedia',
                           );
                         }
 

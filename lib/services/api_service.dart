@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
+  // Gunakan host sesuai platform: web/desktop pakai localhost, Android emulator pakai 10.0.2.2
+  static const String _baseWebDesktop = 'http://localhost:8000/api';
+  static const String _baseAndroidEmu = 'http://10.0.2.2:8000/api';
+  static String get baseUrl => kIsWeb ? _baseWebDesktop : _baseAndroidEmu;
 
   static Map<String, String> _defaultHeaders({String? token}) {
     return {

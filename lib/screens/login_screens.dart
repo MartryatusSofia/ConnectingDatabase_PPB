@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'register_screens.dart';
 import 'package:ppb_koneksibilitas/views/home_screens.dart';
 import 'package:ppb_koneksibilitas/services/auth_service.dart';
@@ -151,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ================= LOGIN LOGIC =================
+  // ================= LOGIN LOGIC (FIXED) =================
   Future<void> _handleLogin() async {
     if (!isChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -166,16 +168,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final success = await AuthService.login(
-        email: emailController.text,
+        email: emailController.text.trim(),
         password: passwordController.text,
       );
 
       setState(() => _isLoading = false);
 
       if (success) {
+        /// 🔑 AMBIL USERNAME DARI INPUT EMAIL
+        final email = emailController.text.trim();
+        final username = email.contains('@')
+            ? email.split('@')[0]
+            : email;
+
+        /// 🔑 SIMPAN KE SHARED PREFERENCES
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', username);
+
+        /// DEBUG
+        debugPrint('USERNAME DISIMPAN: $username');
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeScreens()),
+          MaterialPageRoute(builder: (_) => const HomeScreens()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
