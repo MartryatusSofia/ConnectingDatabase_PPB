@@ -164,23 +164,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final success = await AuthService.login(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-
-    setState(() => _isLoading = false);
-
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => HomeScreens()),
+    try {
+      final success = await AuthService.login(
+        email: emailController.text,
+        password: passwordController.text,
       );
-    } else {
+
+      setState(() => _isLoading = false);
+
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreens()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Email atau password salah'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: Colors.red,
-          content: Text('Email atau password salah'),
+          content: Text(e.toString()),
         ),
       );
     }

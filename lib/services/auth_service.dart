@@ -1,26 +1,23 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:ppb_koneksibilitas/services/api_service.dart';
+import 'package:ppb_koneksibilitas/services/token_storage.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
-
   // ================= LOGIN =================
   static Future<bool> login({
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final data = await ApiService.post(
+      'login',
+      body: {
         'email': email,
         'password': password,
-      }),
+      },
     );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['success'] == true;
+    if (data['success'] == true && data['token'] != null) {
+      await TokenStorage.saveToken(data['token']);
+      return true;
     }
 
     return false;
@@ -34,18 +31,22 @@ class AuthService {
     required String jenisKelamin,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final data = await ApiService.post(
+      'register',
+      body: {
         'email': email,
         'nama_depan': namaDepan,
         'nama_belakang': namaBelakang,
         'jenis_kelamin': jenisKelamin,
         'password': password,
-      }),
+      },
     );
 
-    return response.statusCode == 201;
+    if (data['success'] == true && data['token'] != null) {
+      await TokenStorage.saveToken(data['token']);
+      return true;
+    }
+
+    return false;
   }
 }

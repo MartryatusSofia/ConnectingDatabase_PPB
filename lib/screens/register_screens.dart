@@ -148,33 +148,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => isLoading = true);
 
-    final success = await AuthService.register(
-      email: emailController.text,
-      namaDepan: firstNameController.text,
-      namaBelakang: lastNameController.text,
-      jenisKelamin: selectedGender!,
-      password: passwordController.text,
-    );
-
-    setState(() => isLoading = false);
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('Registrasi berhasil, silakan login'),
-        ),
+    try {
+      final success = await AuthService.register(
+        email: emailController.text,
+        namaDepan: firstNameController.text,
+        namaBelakang: lastNameController.text,
+        jenisKelamin: selectedGender!,
+        password: passwordController.text,
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    } else {
+      setState(() => isLoading = false);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Registrasi berhasil, silakan login'),
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Registrasi gagal'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: Colors.red,
-          content: Text('Registrasi gagal'),
+          content: Text(e.toString()),
         ),
       );
     }

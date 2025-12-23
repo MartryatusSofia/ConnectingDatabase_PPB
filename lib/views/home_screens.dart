@@ -184,10 +184,10 @@ class _HomeScreensState extends State<HomeScreens> {
                         return Column(
                           children: lowongan.map((item) {
                             return JobCard(
-                              title: item.judul,
+                              title: item.posisi,
                               company: item.perusahaan,
-                              tag: item.tipe,
-                              logoUrl: item.logo ??
+                              tag: item.kategori,
+                              logoUrl:
                                   'https://img.icons8.com/fluency/48/company.png',
                             );
                           }).toList(),

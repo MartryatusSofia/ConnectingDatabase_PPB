@@ -1,41 +1,37 @@
 class Lowongan {
   final int id;
-  final String judul;
+  final String posisi;
   final String perusahaan;
-  final String tipe;
-  final String? logo;
+  final String kategori;
+  final String? persyaratan;
+  final String? createdAt;
+  final String? approvedAt;
 
   Lowongan({
     required this.id,
-    required this.judul,
+    required this.posisi,
     required this.perusahaan,
-    required this.tipe,
-    this.logo,
+    required this.kategori,
+    this.persyaratan,
+    this.createdAt,
+    this.approvedAt,
   });
 
-  /// Factory untuk parsing JSON dari API Laravel
   factory Lowongan.fromJson(Map<String, dynamic> json) {
+    final perusahaanData = json['perusahaan'] as Map<String, dynamic>?;
     return Lowongan(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
-      judul: json['judul'] ?? '',
-      perusahaan: json['perusahaan'] != null
-          ? json['perusahaan']['nama'] ?? ''
-          : '',
-      tipe: json['tipe_pekerjaan'] ?? 'Full-time',
-      logo: json['perusahaan'] != null
-          ? json['perusahaan']['logo']
-          : null,
+      id: _parseInt(json['lowongan_id'] ?? json['id']),
+      posisi: json['posisi'] ?? '',
+      perusahaan: perusahaanData?['nama_perusahaan'] ?? '',
+      kategori: json['kategori_pekerjaan'] ?? '-',
+      persyaratan: json['persyaratan'],
+      createdAt: json['created_at'],
+      approvedAt: json['approved_at'],
     );
   }
 
-  /// Jika suatu saat ingin kirim data ke API
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'judul': judul,
-      'perusahaan': perusahaan,
-      'tipe_pekerjaan': tipe,
-      'logo': logo,
-    };
+  static int _parseInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value.toString()) ?? 0;
   }
 }
